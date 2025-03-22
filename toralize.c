@@ -1,10 +1,22 @@
 #include "toralize.h"
+Req *request(const char *dstip, const int dstport){
+    Req *req;
+    req = malloc(reqsize);
 
+    req->vn = 4;
+    req->cd = 1;
+    req->dstport = htons(dstport);
+    req->dstip = inet_addr(dstip);
+    strncpy(req->userid, USERNAME, 8);
+    return req; 
+
+}
 int main(int argc, char *argv[]){
     char *host;
     int port, s;
     struct sockaddr_in sock;
-
+    Req *req;
+    char buf[ressize];
     if(argc < 3){
         fprintf(stderr, "Usage: %s <host> <port> \n", argv[0]);
         return -1;
@@ -28,6 +40,19 @@ int main(int argc, char *argv[]){
         return -1;
     }
     printf("Connected to proxy\n");
+
+    req = request(host, port);
+    write(s, req, reqsize);
+
+    memset(buf, 0, ressize);
+    if (read(s, buf, ressize) < 1){
+        perror("read"):
+        free(req);
+        close(s);
+
+        return -1;
+    }
+
     close(s);
 
     return 0;
