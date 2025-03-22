@@ -10,8 +10,8 @@
 #define PROXY "127.0.0.1"
 #define PROXYPORT 9050
 #define USERNAME "toraliz"
-#define reqsize sizeof(struct proxy_request);
-#define ressize sizeof(struct proxy_response);
+#define reqsize sizeof(struct proxy_request)
+#define ressize sizeof(struct proxy_response)
 
 
 struct proxy_request
@@ -33,6 +33,6 @@ struct proxy_response
     int32_t __;
 };
 
-typedef struct proxy_request Req;
+typedef struct proxy_request Res;
 Req *request(const char*, const int);
 int main(int, char**);
