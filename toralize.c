@@ -1,19 +1,20 @@
 #include "toralize.h"
-Req *request(const char *dstip, const int dstport){
+
+
+Req *request(struct sockaddr_in *sock2){
     Req *req;
     req = malloc(reqsize);
 
     req->vn = 4;
     req->cd = 1;
-    req->dstport = htons(dstport);
-    req->dstip = inet_addr(dstip);
+    req->dstport = sock2->sin_port;
+    req->dstip = sock2->sin_addr.s_addr;
     strncpy(req->userid, USERNAME, 8);
     return req; 
 
 }
-int main(int argc, char *argv[]){
-    char *host;
-    int port, s;
+    int connect(int s2, const struct sockaddr *sock2, socklen_t addrlen){
+    int s;
     struct sockaddr_in sock;
     Req *req;
     Res *res;
@@ -21,14 +22,9 @@ int main(int argc, char *argv[]){
     int success;
     char tmp[512];
 
-    if(argc < 3){
-        fprintf(stderr, "Usage: %s <host> <port> \n", argv[0]);
-        return -1;
-    }
+    int (*p) (int,const struct sockaddr*,socklen_t);
 
-    host = argv[1];
-    port = atoi(argv[2]);
-
+    p = dlsym(RTLD_NEXT, "connect");
     s = socket(AF_INET, SOCK_STREAM, 0);
     if(s < 0){
         perror("socket");
@@ -39,13 +35,13 @@ int main(int argc, char *argv[]){
     sock.sin_port = htons(PROXYPORT);
     sock.sin_addr.s_addr = inet_addr(PROXY);
 
-    if(connect(s, (struct sockaddr *)&sock, sizeof(sock))){
+    if(p(s, (struct sockaddr *)&sock, sizeof(sock))){
         perror("connect");
         return -1;
     }
     printf("Connected to proxy\n");
 
-    req = request(host, port);
+    req = request((struct sockaddr_in*)sock2);
     write(s, req, reqsize);
 
     memset(buf, 0, ressize);
@@ -66,20 +62,9 @@ int main(int argc, char *argv[]){
         free(req);
         return -1;
     }
-    printf("Successfully connected through the proxy to " 
-        "%s: %d\n", host, port);
+    printf("Connected through the proxy. \n");
 
-    memset(tmp, 0, 512);
-    snprintf(tmp, 511, 
-        "HEAD / HTTP/1.1\r\n"
-        "Host: www.networktechnology.org\r\n"
-        "\r\n"
-    );
-    write(s, tmp, strlen(tmp));
-    memset(tmp, 0, 512);
-    read(s, tmp, 511);
-    printf("'%s'\n", tmp);
-    close(s);
+    dup2(s, s2);   
     free(req);
 
     return 0;
