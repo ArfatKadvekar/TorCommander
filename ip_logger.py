@@ -1,49 +1,39 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import logging
-import socket
-import requests
+import http.server
+import socketserver
 import json
+import requests
 
-class RequestLogger(BaseHTTPRequestHandler):
+PORT = 8080  # Change if needed
+
+class MyHandler(http.server.SimpleHTTPRequestHandler):
+    def log_request_info(self, client_ip):
+        print(f"Incoming request from: {client_ip}")
+
+        # Get IP Geolocation
+        try:
+            response = requests.get(f"http://ip-api.com/json/{client_ip}")
+            data = response.json()
+
+            if data["status"] == "success":
+                location_info = f"{data['city']}, {data['country']} (Lat: {data['lat']}, Lon: {data['lon']})"
+                print(f"IP Location: {location_info}")
+                return location_info
+            else:
+                return "Location Not Found"
+        except Exception as e:
+            print(f"Error fetching location: {e}")
+            return "Error Fetching Location"
+
     def do_GET(self):
         client_ip = self.client_address[0]
-        logging.info(f"Incoming request from IP: {client_ip}")
-        
-        # Get IP Geolocation
-        location_info = get_ip_location(client_ip)
-        print(f"IP Logged: {client_ip} | Location: {location_info}")
+        location_info = self.log_request_info(client_ip)
 
-        # Save to log file
-        logging.info(f"IP: {client_ip} | Location: {location_info}")
-
+        # Respond with IP & Location
         self.send_response(200)
+        self.send_header("Content-type", "text/plain")
         self.end_headers()
-        self.wfile.write(b"Hello, Tor User!")
+        self.wfile.write(f"Your IP: {client_ip}\nLocation: {location_info}\n".encode())
 
-def get_server_ip():
-    return socket.gethostbyname(socket.gethostname())
-
-def get_ip_location(ip):
-    try:
-        # Use ipinfo.io to fetch location data
-        response = requests.get(f"https://ipinfo.io/{ip}/json")
-        data = response.json()
-        city = data.get("city", "Unknown")
-        region = data.get("region", "Unknown")
-        country = data.get("country", "Unknown")
-        return f"{city}, {region}, {country}"
-    except Exception as e:
-        print(f"Error fetching IP info: {e}")
-        return "Location Unknown"
-
-if __name__ == "__main__":
-    logging.basicConfig(filename="ip_logs.txt", level=logging.INFO)
-
-    server_ip = get_server_ip()
-    port = 8080
-
-    print(f"Server running on {server_ip}:{port}")
-
-    server_address = ('0.0.0.0', port)
-    httpd = HTTPServer(server_address, RequestLogger)
+with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+    print(f"Serving at port {PORT}")
     httpd.serve_forever()
