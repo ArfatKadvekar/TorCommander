@@ -34,6 +34,6 @@ struct proxy_response
     int32_t __;
 };
 
-typedef struct proxy_request Res;
+typedef struct proxy_response Res;
 Req *request(struct sockaddr_in*);
 int connect(int,const struct sockaddr*,socklen_t);
