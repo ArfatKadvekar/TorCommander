@@ -46,7 +46,7 @@ int connect(int s2, const struct sockaddr *sock2, socklen_t addrlen) {
         close(s);
         return -1;
     }
-    printf("[+] Connected to Tor SOCKS4 Proxy\n");
+    printf("\033[44;1;37m[+] Connected to Tor SOCKS4 Proxy\033[0m\n");
 
     // Send SOCKS4 request
     req = request((struct sockaddr_in *)sock2);
@@ -67,12 +67,12 @@ int connect(int s2, const struct sockaddr *sock2, socklen_t addrlen) {
 
     // Check SOCKS4 response code (CD = 90 means success)
     if (res.cd != 90) {
-        fprintf(stderr, "[-] SOCKS4 proxy error: %d\n", res.cd);
+        fprintf(stderr, "\033[41;1;37m[-] SOCKS4 proxy error: %d\033[0m\n", res.cd);
         close(s);
         return -1;
     }
 
-    printf("[+] Connection established through Tor!\n");
+    printf("\033[42;1;37m[+] Connection established through Tor!\033[0m\n");
 
     // Redirect communication to the target socket
     dup2(s, s2);
