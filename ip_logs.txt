@@ -1,2 +1,0 @@
-INFO:root:Incoming request from IP: 127.0.0.1
-INFO:root:IP: 127.0.0.1 | Location: Unknown, Unknown, Unknown
