@@ -45,7 +45,7 @@ sudo apt install tor gcc make
 
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/Anay-Patil/torcommander.git
+git clone https://github.com/ArfatKadvekar/torcommander.git
 cd torcommander
 ```
 
