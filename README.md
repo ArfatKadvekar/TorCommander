@@ -11,7 +11,7 @@
 
 **TorCommander** is a lightweight, open-source Linux tool that anonymizes terminal command executions by routing traffic through the **Tor network**. Designed with simplicity and privacy in mind, it helps users protect their identity and bypass restrictive firewalls.
 
-Inspired by cybersecurity advocate **Dr. Jones Birch**, the project takes the concept further—offering a practical, minimal, and easily extensible tool for secure, command-line-based internet access.
+Inspired by cybersecurity advocate **Dr. Jones Birch**, the project takes the concept further offering a practical, minimal, and easily extensible tool for secure, command-line-based internet access.
 
 ---
 
