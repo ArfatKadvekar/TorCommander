@@ -111,14 +111,6 @@ The following types of commands are compatible:
 
 ---
 
-## 🌿 Sustainability Goals
-
-This project aligns with:
-- **SDG 9**: Promotes robust, secure, and innovative digital infrastructure.
-- **SDG 16**: Strengthens digital rights, privacy, and fair access.
-
----
-
 ## 📄 License
 
 This project is licensed under the **MIT License**. Feel free to modify and use it as needed. See the [LICENSE](LICENSE) file for details.
